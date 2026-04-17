@@ -11,6 +11,7 @@ const navItems = [
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const { isAuthenticated, isAdmin, signOut } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -46,9 +47,44 @@ export function Header() {
               {item.label}
             </Link>
           ))}
+          {isAuthenticated && (
+            <Link
+              to="/dashboard"
+              className="nav-link text-sm font-medium text-foreground/80 hover:text-foreground"
+              activeProps={{ className: "nav-link active text-foreground" }}
+            >
+              Dashboard
+            </Link>
+          )}
+          {isAdmin && (
+            <Link
+              to="/admin"
+              className="nav-link text-sm font-medium text-primary hover:text-primary"
+              activeProps={{ className: "nav-link active text-primary" }}
+            >
+              Admin
+            </Link>
+          )}
         </nav>
 
-        <div className="hidden md:flex">
+        <div className="hidden items-center gap-3 md:flex">
+          {isAuthenticated ? (
+            <button
+              onClick={() => signOut()}
+              className="flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground/80 transition-smooth hover:bg-secondary hover:text-foreground"
+            >
+              <LogOut className="h-4 w-4" />
+              Sign out
+            </button>
+          ) : (
+            <Link
+              to="/auth"
+              className="flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground/80 transition-smooth hover:bg-secondary hover:text-foreground"
+            >
+              <UserIcon className="h-4 w-4" />
+              Sign in
+            </Link>
+          )}
           <Link
             to="/rooms"
             className="rounded-full bg-gradient-gold px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-gold transition-bounce hover:scale-105"
@@ -79,6 +115,43 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
+            {isAuthenticated && (
+              <Link
+                to="/dashboard"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium text-foreground/80 hover:bg-secondary hover:text-foreground"
+              >
+                <LayoutDashboard className="h-4 w-4" /> Dashboard
+              </Link>
+            )}
+            {isAdmin && (
+              <Link
+                to="/admin"
+                onClick={() => setOpen(false)}
+                className="rounded-md px-3 py-2.5 text-sm font-medium text-primary hover:bg-secondary"
+              >
+                Admin
+              </Link>
+            )}
+            {isAuthenticated ? (
+              <button
+                onClick={() => {
+                  setOpen(false);
+                  signOut();
+                }}
+                className="flex items-center gap-2 rounded-md px-3 py-2.5 text-left text-sm font-medium text-foreground/80 hover:bg-secondary hover:text-foreground"
+              >
+                <LogOut className="h-4 w-4" /> Sign out
+              </button>
+            ) : (
+              <Link
+                to="/auth"
+                onClick={() => setOpen(false)}
+                className="rounded-md px-3 py-2.5 text-sm font-medium text-foreground/80 hover:bg-secondary hover:text-foreground"
+              >
+                Sign in
+              </Link>
+            )}
             <Link
               to="/rooms"
               onClick={() => setOpen(false)}
