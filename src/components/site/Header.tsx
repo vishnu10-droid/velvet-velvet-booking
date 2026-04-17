@@ -1,12 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { LayoutDashboard, LogOut, Menu, User as UserIcon, X } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
 
 const navItems = [
   { to: "/", label: "Home" },
   { to: "/rooms", label: "Rooms" },
-  { to: "/about", label: "About" },
-  { to: "/contact", label: "Contact" },
 ] as const;
 
 export function Header() {
