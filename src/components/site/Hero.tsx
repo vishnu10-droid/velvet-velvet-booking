@@ -7,7 +7,7 @@ export function Hero() {
     <section className="relative h-[100svh] min-h-[640px] w-full overflow-hidden">
       <img
         src={heroImg}
-        alt="Aurélia hotel grand lobby at dusk"
+        alt="Aurelia hotel grand lobby at dusk"
         width={1920}
         height={1280}
         className="absolute inset-0 h-full w-full object-cover"
@@ -16,16 +16,13 @@ export function Hero() {
 
       <div className="relative z-10 mx-auto flex h-full max-w-7xl flex-col justify-end px-6 pb-24 lg:px-10 lg:pb-32">
         <div className="max-w-3xl animate-fade-up">
-          <p className="mb-5 text-xs font-medium uppercase tracking-[0.4em] text-primary">
-            ★ ★ ★ ★ ★ &nbsp; Five Star Sanctuary
-          </p>
+          <p className="mb-5 text-xs font-medium uppercase tracking-[0.4em] text-primary">Five star sanctuary</p>
           <h1 className="font-display text-5xl leading-[1.05] tracking-tight text-foreground sm:text-6xl md:text-7xl lg:text-[88px]">
-            A retreat where{" "}
-            <span className="italic text-gradient-gold">elegance</span> finds you
+            A retreat where <span className="italic text-gradient-gold">elegance</span> finds you
           </h1>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-foreground/80 md:text-lg">
-            Discover Aurélia — a sanctuary of refined comfort, world-class
-            cuisine, and unforgettable views in the heart of the city.
+            Discover Aurelia - a sanctuary of refined comfort, world-class cuisine, and unforgettable views in the
+            heart of the city.
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-4">
             <Link
@@ -47,3 +44,4 @@ export function Hero() {
     </section>
   );
 }
+

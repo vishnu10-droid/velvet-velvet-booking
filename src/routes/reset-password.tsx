@@ -2,44 +2,47 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Loader2, Lock } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { Footer } from "@/components/site/Footer";
+import { Header } from "@/components/site/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Header } from "@/components/site/Header";
-import { Footer } from "@/components/site/Footer";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/reset-password")({
   head: () => ({
-    meta: [{ title: "Reset password — Aurélia" }],
+    meta: [{ title: "Reset password - Aurelia" }],
   }),
-  component: ResetPassword,
+  component: ResetPasswordPage,
 });
 
-function ResetPassword() {
+function ResetPasswordPage() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     if (password.length < 6) {
-      toast.error("Password must be at least 6 characters");
+      toast.error("Password must be at least 6 characters.");
       return;
     }
     if (password !== confirm) {
-      toast.error("Passwords do not match");
+      toast.error("Passwords do not match.");
       return;
     }
+
     setSubmitting(true);
     const { error } = await supabase.auth.updateUser({ password });
     setSubmitting(false);
+
     if (error) {
       toast.error(error.message);
       return;
     }
-    toast.success("Password updated");
+
+    toast.success("Password updated.");
     navigate({ to: "/dashboard" });
   };
 
@@ -58,7 +61,7 @@ function ResetPassword() {
                   id="password"
                   type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(event) => setPassword(event.target.value)}
                   className="pl-9"
                   required
                 />
@@ -72,7 +75,7 @@ function ResetPassword() {
                   id="confirm"
                   type="password"
                   value={confirm}
-                  onChange={(e) => setConfirm(e.target.value)}
+                  onChange={(event) => setConfirm(event.target.value)}
                   className="pl-9"
                   required
                 />
@@ -84,7 +87,7 @@ function ResetPassword() {
               className="w-full bg-gradient-gold text-primary-foreground shadow-gold hover:opacity-90"
               size="lg"
             >
-              {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {submitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               Update password
             </Button>
           </form>
@@ -94,3 +97,4 @@ function ResetPassword() {
     </div>
   );
 }
+

@@ -6,6 +6,8 @@ import { useAuth } from "@/lib/auth-context";
 const navItems = [
   { to: "/", label: "Home" },
   { to: "/rooms", label: "Rooms" },
+  { to: "/about", label: "About" },
+  { to: "/contact", label: "Contact" },
 ] as const;
 
 export function Header() {
@@ -23,15 +25,13 @@ export function Header() {
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-smooth ${
-        scrolled
-          ? "bg-background/80 backdrop-blur-xl border-b border-border"
-          : "bg-transparent"
+        scrolled ? "border-b border-border bg-background/80 backdrop-blur-xl" : "bg-transparent"
       }`}
     >
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-10">
         <Link to="/" className="flex items-center gap-2">
           <span className="font-display text-2xl tracking-wide">
-            Aur<span className="text-gradient-gold">é</span>lia
+            Aur<span className="text-gradient-gold">e</span>lia
           </span>
         </Link>
 
@@ -47,7 +47,8 @@ export function Header() {
               {item.label}
             </Link>
           ))}
-          {isAuthenticated && (
+
+          {isAuthenticated ? (
             <Link
               to="/dashboard"
               className="nav-link text-sm font-medium text-foreground/80 hover:text-foreground"
@@ -55,8 +56,9 @@ export function Header() {
             >
               Dashboard
             </Link>
-          )}
-          {isAdmin && (
+          ) : null}
+
+          {isAdmin ? (
             <Link
               to="/admin"
               className="nav-link text-sm font-medium text-primary hover:text-primary"
@@ -64,7 +66,7 @@ export function Header() {
             >
               Admin
             </Link>
-          )}
+          ) : null}
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
@@ -85,24 +87,21 @@ export function Header() {
               Sign in
             </Link>
           )}
+
           <Link
             to="/rooms"
             className="rounded-full bg-gradient-gold px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow-gold transition-bounce hover:scale-105"
           >
-            Book Now
+            Book now
           </Link>
         </div>
 
-        <button
-          aria-label="Toggle menu"
-          className="md:hidden"
-          onClick={() => setOpen((v) => !v)}
-        >
+        <button aria-label="Toggle menu" className="md:hidden" onClick={() => setOpen((value) => !value)}>
           {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>
 
-      {open && (
+      {open ? (
         <div className="border-t border-border bg-background/95 backdrop-blur-xl md:hidden">
           <div className="flex flex-col gap-1 px-6 py-4">
             {navItems.map((item) => (
@@ -115,16 +114,19 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
-            {isAuthenticated && (
+
+            {isAuthenticated ? (
               <Link
                 to="/dashboard"
                 onClick={() => setOpen(false)}
                 className="flex items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium text-foreground/80 hover:bg-secondary hover:text-foreground"
               >
-                <LayoutDashboard className="h-4 w-4" /> Dashboard
+                <LayoutDashboard className="h-4 w-4" />
+                Dashboard
               </Link>
-            )}
-            {isAdmin && (
+            ) : null}
+
+            {isAdmin ? (
               <Link
                 to="/admin"
                 onClick={() => setOpen(false)}
@@ -132,7 +134,8 @@ export function Header() {
               >
                 Admin
               </Link>
-            )}
+            ) : null}
+
             {isAuthenticated ? (
               <button
                 onClick={() => {
@@ -141,7 +144,8 @@ export function Header() {
                 }}
                 className="flex items-center gap-2 rounded-md px-3 py-2.5 text-left text-sm font-medium text-foreground/80 hover:bg-secondary hover:text-foreground"
               >
-                <LogOut className="h-4 w-4" /> Sign out
+                <LogOut className="h-4 w-4" />
+                Sign out
               </button>
             ) : (
               <Link
@@ -152,16 +156,18 @@ export function Header() {
                 Sign in
               </Link>
             )}
+
             <Link
               to="/rooms"
               onClick={() => setOpen(false)}
               className="mt-2 rounded-full bg-gradient-gold px-6 py-2.5 text-center text-sm font-semibold text-primary-foreground shadow-gold"
             >
-              Book Now
+              Book now
             </Link>
           </div>
         </div>
-      )}
+      ) : null}
     </header>
   );
 }
+

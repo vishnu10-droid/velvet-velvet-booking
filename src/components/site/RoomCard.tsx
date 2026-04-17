@@ -1,7 +1,18 @@
 import { Star } from "lucide-react";
-import type { Room } from "@/data/rooms";
+import { Link } from "@tanstack/react-router";
 
-export function RoomCard({ room, index = 0 }: { room: Room; index?: number }) {
+type DisplayRoom = {
+  id: string;
+  name: string;
+  tagline: string;
+  description: string;
+  price: number;
+  image: string;
+  amenities: string[];
+  rating: number;
+};
+
+export function RoomCard({ room, index = 0 }: { room: DisplayRoom; index?: number }) {
   return (
     <article
       className="group relative flex flex-col overflow-hidden rounded-2xl bg-gradient-card shadow-elegant transition-smooth hover:-translate-y-2 hover:shadow-gold animate-fade-up"
@@ -54,9 +65,13 @@ export function RoomCard({ room, index = 0 }: { room: Room; index?: number }) {
               </span>
             </p>
           </div>
-          <button className="rounded-full border border-primary/40 px-5 py-2 text-sm font-medium text-primary transition-smooth hover:bg-primary hover:text-primary-foreground">
+          <Link
+            to="/rooms/$roomId"
+            params={{ roomId: room.id }}
+            className="rounded-full border border-primary/40 px-5 py-2 text-sm font-medium text-primary transition-smooth hover:bg-primary hover:text-primary-foreground"
+          >
             Reserve
-          </button>
+          </Link>
         </div>
       </div>
     </article>

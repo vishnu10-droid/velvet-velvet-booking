@@ -3,9 +3,12 @@ import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
 export type AppRole = "admin" | "customer";
+export type AuthUser = Pick<User, "id" | "email" | "user_metadata"> & {
+  isDemo?: boolean;
+};
 
 interface AuthContextValue {
-  user: User | null;
+  user: AuthUser | null;
   session: Session | null;
   roles: AppRole[];
   loading: boolean;
@@ -13,46 +16,100 @@ interface AuthContextValue {
   isAuthenticated: boolean;
   signOut: () => Promise<void>;
   refreshRoles: () => Promise<void>;
+  signInAsDemo: (email: string) => void;
 }
+
+const DEMO_SESSION_KEY = "aurelia-demo-session-v1";
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
+function createDemoUser(email: string): AuthUser {
+  return {
+    id: "demo-user-local",
+    email,
+    user_metadata: { full_name: "Demo Guest" },
+    isDemo: true,
+  };
+}
+
+function readDemoSession() {
+  if (typeof window === "undefined") return null;
+  const raw = window.localStorage.getItem(DEMO_SESSION_KEY);
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as { email?: string };
+    if (!parsed.email) return null;
+    return createDemoUser(parsed.email);
+  } catch {
+    return null;
+  }
+}
+
+function writeDemoSession(email: string) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(DEMO_SESSION_KEY, JSON.stringify({ email }));
+}
+
+function clearDemoSession() {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(DEMO_SESSION_KEY);
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchRoles = async (userId: string) => {
-    const { data, error } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId);
+    const { data, error } = await supabase.from("user_roles").select("role").eq("user_id", userId);
     if (error) {
       console.error("[auth] fetch roles error", error);
       setRoles([]);
       return;
     }
-    setRoles((data ?? []).map((r) => r.role as AppRole));
+    setRoles((data ?? []).map((item) => item.role as AppRole));
   };
 
   useEffect(() => {
-    // CRITICAL: set up listener BEFORE getSession
     const { data: sub } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      setSession(newSession);
-      setUser(newSession?.user ?? null);
       if (newSession?.user) {
-        // defer to avoid recursive deadlock
+        clearDemoSession();
+        setSession(newSession);
+        setUser(newSession.user);
         setTimeout(() => fetchRoles(newSession.user.id), 0);
+        return;
+      }
+
+      const demoUser = readDemoSession();
+      if (demoUser) {
+        setSession(null);
+        setUser(demoUser);
+        setRoles(["customer"]);
       } else {
+        setSession(null);
+        setUser(null);
         setRoles([]);
       }
     });
 
     supabase.auth.getSession().then(({ data: { session: existing } }) => {
-      setSession(existing);
-      setUser(existing?.user ?? null);
-      if (existing?.user) fetchRoles(existing.user.id);
+      if (existing?.user) {
+        setSession(existing);
+        setUser(existing.user);
+        fetchRoles(existing.user.id);
+      } else {
+        const demoUser = readDemoSession();
+        if (demoUser) {
+          setSession(null);
+          setUser(demoUser);
+          setRoles(["customer"]);
+        } else {
+          setSession(null);
+          setUser(null);
+          setRoles([]);
+        }
+      }
       setLoading(false);
     });
 
@@ -60,12 +117,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    clearDemoSession();
     setRoles([]);
+    setSession(null);
+    setUser(null);
+    await supabase.auth.signOut();
   };
 
   const refreshRoles = async () => {
-    if (user) await fetchRoles(user.id);
+    if (user && !user.isDemo) await fetchRoles(user.id);
+  };
+
+  const signInAsDemo = (email: string) => {
+    writeDemoSession(email);
+    setSession(null);
+    setUser(createDemoUser(email));
+    setRoles(["customer"]);
   };
 
   return (
@@ -75,10 +142,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         session,
         roles,
         loading,
-        isAdmin: roles.includes("admin"),
+        isAdmin: !user?.isDemo && roles.includes("admin"),
         isAuthenticated: !!user,
         signOut,
         refreshRoles,
+        signInAsDemo,
       }}
     >
       {children}
@@ -87,7 +155,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 }
 
 export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
-  return ctx;
+  const context = useContext(AuthContext);
+  if (!context) throw new Error("useAuth must be used within AuthProvider");
+  return context;
 }
+

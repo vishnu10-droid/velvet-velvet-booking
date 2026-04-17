@@ -1,32 +1,31 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Header } from "@/components/site/Header";
-import { Footer } from "@/components/site/Footer";
-import { Hero } from "@/components/site/Hero";
-import { FeaturedRooms } from "@/components/site/FeaturedRooms";
 import { Amenities } from "@/components/site/Amenities";
+import { FeaturedRooms } from "@/components/site/FeaturedRooms";
+import { Footer } from "@/components/site/Footer";
+import { Header } from "@/components/site/Header";
+import { Hero } from "@/components/site/Hero";
 import { Testimonials } from "@/components/site/Testimonials";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Aurélia — A Five-Star Sanctuary" },
+      { title: "Aurelia - A Five-Star Sanctuary" },
       {
         name: "description",
         content:
-          "Discover Aurélia, a luxury hotel where timeless elegance meets modern comfort. Reserve suites, dining and spa experiences.",
+          "Discover Aurelia, a luxury hotel where timeless elegance meets modern comfort. Reserve suites, dining, and spa experiences.",
       },
-      { property: "og:title", content: "Aurélia — A Five-Star Sanctuary" },
+      { property: "og:title", content: "Aurelia - A Five-Star Sanctuary" },
       {
         property: "og:description",
-        content:
-          "Luxury suites, Michelin dining, rooftop infinity pool, and bespoke concierge service.",
+        content: "Luxury suites, fine dining, rooftop views, and bespoke concierge service.",
       },
     ],
   }),
-  component: Index,
+  component: HomePage,
 });
 
-function Index() {
+function HomePage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Header />
@@ -40,3 +39,4 @@ function Index() {
     </div>
   );
 }
+
