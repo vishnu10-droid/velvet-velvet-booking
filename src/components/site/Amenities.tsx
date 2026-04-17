@@ -1,14 +1,11 @@
-import { Sparkles, Utensils, Waves, Wine, Dumbbell, Concierge } from "lucide-react";
-
-// Lucide doesn't ship "Concierge" — fall back gracefully
-const ConciergeIcon = (Concierge as unknown as React.ElementType) ?? Sparkles;
+import { Sparkles, Utensils, Waves, Wine, Dumbbell, BellRing } from "lucide-react";
 
 const items = [
   { icon: Utensils, title: "Michelin-starred dining", desc: "Two restaurants and a chef's table." },
   { icon: Waves, title: "Rooftop infinity pool", desc: "Heated, with skyline panoramas." },
   { icon: Wine, title: "Reserve cellar bar", desc: "Curated vintages and craft cocktails." },
   { icon: Dumbbell, title: "Wellness & spa", desc: "24h fitness, hammam, and treatments." },
-  { icon: ConciergeIcon, title: "Personal concierge", desc: "Round-the-clock bespoke service." },
+  { icon: BellRing, title: "Personal concierge", desc: "Round-the-clock bespoke service." },
   { icon: Sparkles, title: "Turn-down ritual", desc: "Nightly chocolates and silk linens." },
 ];
 
